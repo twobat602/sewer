@@ -202,7 +202,7 @@ Toggle1:Callback(function(Value)
 							task.wait(0.1) -- Short delay to ensure it fires properly
 						end
 					end
-							task.wait(1)
+							task.wait(2)
 				end
 			end
 		end
