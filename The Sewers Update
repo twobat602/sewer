@@ -182,11 +182,9 @@ Toggle1:Callback(function(Value)
 	running = Value
 
 	while running do
-		-- Refresh character and HRP every loop to support respawn
 		local character = player.Character or player.CharacterAdded:Wait()
 		local hrp = character:FindFirstChild("HumanoidRootPart")
 
-		-- Proceed only if HRP exists
 		if hrp then
 			local scrapPiles = workspace:WaitForChild("DynamicFurniture"):GetChildren()
 
@@ -195,12 +193,13 @@ Toggle1:Callback(function(Value)
 				if obj.Name == "ScrapPile" and obj:IsA("Model") then
 					-- Teleport to ScrapPile
 					hrp.CFrame = CFrame.new(obj:GetModelCFrame().Position + Vector3.new(0, 5, 0))
-					task.wait(3)
+					task.wait(1) -- Wait before firing prompts
 
-					-- Fire all ProximityPrompts inside
+					-- Fire all ProximityPrompts with short delay between each
 					for _, descendant in pairs(obj:GetDescendants()) do
 						if descendant:IsA("ProximityPrompt") then
 							fireproximityprompt(descendant)
+							task.wait(0.1) -- Short delay to ensure it fires properly
 						end
 					end
 				end
