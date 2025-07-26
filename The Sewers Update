@@ -170,11 +170,9 @@ local Section = TabCollect:AddSection({"Auto Collect"})
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local hrp = character:WaitForChild("HumanoidRootPart")
 
 local Toggle1 = TabCollect:AddToggle({ 
-  Name = "Auto Bottle/Gears",
+  Name = "Collect Bottle/Gear",
   Default = false 
 })
 
@@ -182,33 +180,34 @@ local running = false
 
 Toggle1:Callback(function(Value)
 	running = Value
-	
+
 	while running do
-		local scrapPiles = workspace:WaitForChild("DynamicFurniture"):GetChildren()
-		
-		for _, obj in pairs(scrapPiles) do
-			if obj.Name == "ScrapPile" then
-				-- Teleport player to the ScrapPile
-				if hrp and obj:IsA("Model") then
+		-- Refresh character and HRP every loop to support respawn
+		local character = player.Character or player.CharacterAdded:Wait()
+		local hrp = character:FindFirstChild("HumanoidRootPart")
+
+		-- Proceed only if HRP exists
+		if hrp then
+			local scrapPiles = workspace:WaitForChild("DynamicFurniture"):GetChildren()
+
+			for _, obj in pairs(scrapPiles) do
+				if not running then break end
+				if obj.Name == "ScrapPile" and obj:IsA("Model") then
+					-- Teleport to ScrapPile
 					hrp.CFrame = CFrame.new(obj:GetModelCFrame().Position + Vector3.new(0, 5, 0))
-					task.wait(1) -- Wait 1 second
-					
-					-- Fire all ProximityPrompts inside the ScrapPile
+					task.wait(3)
+
+					-- Fire all ProximityPrompts inside
 					for _, descendant in pairs(obj:GetDescendants()) do
 						if descendant:IsA("ProximityPrompt") then
 							fireproximityprompt(descendant)
 						end
 					end
-					
-					task.wait(3) -- Optional delay before next ScrapPile
 				end
 			end
 		end
-		
-		task.wait(1) -- Small wait before repeating
 	end
 end)
-
 
 local teleporting = false
 
