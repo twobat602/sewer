@@ -1,11 +1,180 @@
+local player = game.Players.LocalPlayer
+local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/tbao143/Library-ui/refs/heads/main/Redzhubui"))()
+local Window = redzlib:MakeWindow({
+    Title = "redz Hub : The Sewers",
+    SubTitle = "by Twobat",
+    SaveFolder = "testando | redz lib v5.lua"
+})
+
+Window:AddMinimizeButton({
+    Button = { Image = "rbxassetid://119965632862212", BackgroundTransparency = 0 },
+    Corner = { CornerRadius = UDim.new(35, 1) },
+})
+
+-- Player Tab
+local TabPlayer = Window:MakeTab({"Player", "person"})
+Window:SelectTab(TabPlayer)
+
+local Paragraph = TabPlayer:AddParagraph({"⚠ Take Note!", "This script is still in beta, so you might encounter some bugs."})
+
+-- Initial player list
+local function getPlayerNames()
+    local names = {}
+    for _, plr in ipairs(game.Players:GetPlayers()) do
+        if plr ~= player then -- Hindi isasama ang sarili sa listahan
+            table.insert(names, plr.Name)
+        end
+    end
+    return names
+end
+
+local playerNames = getPlayerNames()
+
+-- Player List Dropdown
+local selectedPlayer = nil
+local playerDropdown = TabPlayer:AddDropdown({
+    Name = "Players List",
+    Description = "Select a player to teleport to",
+    Options = playerNames, 
+    Default = "",
+    Flag = "PlayerDropdown",
+    Callback = function(Value)
+        selectedPlayer = Value
+    end
+})
+
+-- Function para i-update ang player list
+local function updatePlayerList()
+    local updatedNames = getPlayerNames()
+    playerDropdown:Refresh(updatedNames)
+end
+
+-- Auto-refresh kapag may nag-join o nag-leave
+game.Players.PlayerAdded:Connect(updatePlayerList)
+game.Players.PlayerRemoving:Connect(updatePlayerList)
+
+-- Refresh Button
+TabPlayer:AddButton({
+    Name = "Refresh Player List",
+    Callback = function()
+        updatePlayerList()
+    end
+})
+
+-- Teleport Button (Ikaw ang pupunta sa napiling player)
+TabPlayer:AddButton({
+    Name = "Teleport to Player",
+    Callback = function()
+        if selectedPlayer then
+            local targetPlayer = game.Players:FindFirstChild(selectedPlayer)
+            if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                player.Character.HumanoidRootPart.CFrame = targetPlayer.Character.HumanoidRootPart.CFrame
+            end
+        end
+    end
+})
+
+local Paragraph = TabPlayer:AddParagraph({"How to use bring player", "Click the Bring button first and place it in the ground, and select player, create a clan\nask the player to join and ask to sit. Go to loc you want and click bring ang place the beanbag on the ground"})
+
+-- Get BeanBag Button
+TabPlayer:AddButton({"Bring player", function()
+    local beanBag = game.Workspace.DynamicFurniture:FindFirstChild("BeanBag")
+    if beanBag and beanBag:FindFirstChild("MeshPart") then
+        local meshPart = beanBag.MeshPart
+        local ownerAttribute = beanBag:GetAttribute("Owner")
+
+        if ownerAttribute == nil or ownerAttribute == player.UserId then
+            local frontPosition = player.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, -5)
+            meshPart.CFrame = frontPosition
+        end
+    end
+end})
+
+local TabCollect = Window:MakeTab({"Collect", "cherry"})
+
+local Paragraph = TabCollect:AddParagraph({"Farm gear/bottle", "This is not automatically place, you need a Extractor for farming gear and bottle"})
+
+TabCollect:AddButton({"Collect All Scrap2", function()
+    for _, scrap in ipairs(game.Workspace.DynamicFurniture:GetChildren()) do
+        if scrap:IsA("Model") and scrap.Name == "Scrap2" then
+            local ownerAttribute = scrap:GetAttribute("Owner")
+
+            -- Iteteleport lang ang Scrap2 kung wala itong may-ari
+            if ownerAttribute == nil then
+                local playerRoot = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+                local smoothPart = scrap:FindFirstChildWhichIsA("MeshPart") -- Hahanapin ang MeshPart
+                
+                if playerRoot and smoothPart then
+                    smoothPart.CFrame = playerRoot.CFrame * CFrame.new(0, 0, -2)
+                end
+            end
+        end
+    end
+end})
+
+TabCollect:AddButton({"Collect All Pallet2", function()
+    for _, pallet in ipairs(game.Workspace.DynamicFurniture:GetChildren()) do
+        if pallet:IsA("Model") and pallet.Name == "Pallet2" then
+            local ownerAttribute = pallet:GetAttribute("Owner")
+
+            -- Iteteleport lang ang Pallet2 kung wala itong may-ari
+            if ownerAttribute == nil then
+                local playerRoot = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+                if playerRoot then
+                    pallet:SetPrimaryPartCFrame(playerRoot.CFrame * CFrame.new(0, 0, -2))
+                end
+            end
+        end
+    end
+end})
+
+TabCollect:AddButton({"Collect All Television", function()
+    for _, tv in ipairs(game.Workspace.DynamicFurniture:GetChildren()) do
+        if tv:IsA("Model") and tv.Name == "Television" then
+            local ownerAttribute = tv:GetAttribute("Owner")
+
+            -- Iteteleport lang ang Television kung wala itong may-ari
+            if ownerAttribute == nil then
+                local playerRoot = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+                local smoothPart = tv:FindFirstChildWhichIsA("MeshPart") -- Hahanapin ang MeshPart
+                
+                if playerRoot and smoothPart then
+                    smoothPart.CFrame = playerRoot.CFrame * CFrame.new(0, 0, -2)
+                end
+            end
+        end
+    end
+end})
+
+TabCollect:AddButton({"Collect All TrashCan", function()
+    for _, trash in ipairs(game.Workspace.DynamicFurniture:GetChildren()) do
+        if trash:IsA("Model") and trash.Name == "TrashCan" then
+            local ownerAttribute = trash:GetAttribute("Owner")
+
+            -- Iteteleport lang ang TrashCan kung wala itong may-ari
+            if ownerAttribute == nil then
+                local playerRoot = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+                local smoothPart = trash:FindFirstChildWhichIsA("MeshPart") -- Hahanapin ang MeshPart
+                
+                if playerRoot and smoothPart then
+                    smoothPart.CFrame = playerRoot.CFrame * CFrame.new(0, 0, -2)
+                end
+            end
+        end
+    end
+end})
+
+
+
+local Section = TabCollect:AddSection({"Auto Collect"})
+
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local hrp = character:WaitForChild("HumanoidRootPart")
 
 local Toggle1 = TabCollect:AddToggle({ 
-  Name = "Auto Collect ScrapPile",
-  Description = "Teleports to each ScrapPile and fires all ProximityPrompts",
+  Name = "Auto Bottle/Gears",
   Default = false 
 })
 
@@ -31,7 +200,7 @@ Toggle1:Callback(function(Value)
 						end
 					end
 					
-					task.wait(1) -- Optional delay before next ScrapPile
+					task.wait(3) -- Optional delay before next ScrapPile
 				end
 			end
 		end
@@ -39,3 +208,591 @@ Toggle1:Callback(function(Value)
 		task.wait(1) -- Small wait before repeating
 	end
 end)
+
+
+local teleporting = false
+
+TabCollect:AddToggle({
+    Name = "Collect Snow",
+    Default = false,
+    Callback = function(v)
+        teleporting = v
+
+        if teleporting then
+            local player = game.Players.LocalPlayer
+            local character = player.Character
+            if not character then return end
+
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            local rootPart = character:FindFirstChild("HumanoidRootPart")
+            local camera = workspace.CurrentCamera
+            if not humanoid or not rootPart or not camera then return end
+
+            humanoid.WalkSpeed = 0
+
+            for _, snow in ipairs(workspace.DynamicFurniture:GetChildren()) do
+                if not teleporting then break end
+
+                if snow:IsA("Model") and snow.Name == "Snow" then
+                    local meshPart = snow:FindFirstChildWhichIsA("MeshPart")
+                    local prompt = snow:FindFirstChildWhichIsA("ProximityPrompt")
+
+                    if meshPart and prompt then
+                        rootPart.CFrame = meshPart.CFrame
+                        task.wait(0.2)
+                        camera.CFrame = CFrame.new(camera.CFrame.Position, rootPart.Position - Vector3.new(0, 15, 0))
+                        task.wait(0.5)
+
+                        if prompt.ClickablePrompt then
+                            fireproximityprompt(prompt, 0)
+                            task.wait(0.3)
+                            fireproximityprompt(prompt, 1)
+                        else
+                            fireproximityprompt(prompt)
+                        end
+
+                        task.wait(2)
+                    end
+                end
+            end
+
+            humanoid.WalkSpeed = 16
+        end
+    end
+})
+
+local collectingBurger = false
+local noclipConnection
+
+TabCollect:AddToggle({
+    Name = "Collect Burger",
+    Default = false,
+    Callback = function(v)
+        collectingBurger = v
+
+        if collectingBurger then
+            task.spawn(function()
+                local player = game.Players.LocalPlayer
+                local character = player.Character
+                if not character then return end
+
+                local humanoid = character:FindFirstChildOfClass("Humanoid")
+                local rootPart = character:FindFirstChild("HumanoidRootPart")
+                local camera = workspace.CurrentCamera
+                if not humanoid or not rootPart or not camera then return end
+
+                humanoid.WalkSpeed = 0
+
+                noclipConnection = game:GetService("RunService").Stepped:Connect(function()
+                    for _, part in pairs(character:GetDescendants()) do
+                        if part:IsA("BasePart") and part.CanCollide then
+                            part.CanCollide = false
+                        end
+                    end
+                end)
+
+                while collectingBurger do
+                    for _, burger in ipairs(workspace.DynamicFurniture:GetChildren()) do
+                        if not collectingBurger then break end
+
+                        if burger:IsA("Model") and burger.Name == "Burger" then
+                            local meshPart = burger:FindFirstChildWhichIsA("MeshPart")
+                            local prompt = burger:FindFirstChildWhichIsA("ProximityPrompt")
+
+                            if meshPart and prompt then
+                                rootPart.CFrame = CFrame.new(meshPart.Position + Vector3.new(0, 6, 0))
+                                task.wait(0.2)
+                                camera.CFrame = CFrame.new(camera.CFrame.Position, rootPart.Position - Vector3.new(0, 15, 0))
+                                task.wait(0.5)
+
+                                if prompt.ClickablePrompt then
+                                    fireproximityprompt(prompt, 0)
+                                    task.wait(0.3)
+                                    fireproximityprompt(prompt, 1)
+                                else
+                                    fireproximityprompt(prompt)
+                                end
+
+                                task.wait(2)
+                            end
+                        end
+                    end
+                    task.wait(1)
+                end
+
+                if noclipConnection then
+                    noclipConnection:Disconnect()
+                    noclipConnection = nil
+                end
+
+                humanoid.WalkSpeed = 16
+            end)
+        end
+    end
+})
+
+local collectingCheese = false
+
+TabCollect:AddToggle({
+    Name = "Collect Cheese",
+    Default = false,
+    Callback = function(v)
+        collectingCheese = v
+
+        if collectingCheese then
+            task.spawn(function()
+                local player = game.Players.LocalPlayer
+                local character = player.Character
+                if not character then return end
+
+                local humanoid = character:FindFirstChildOfClass("Humanoid")
+                local rootPart = character:FindFirstChild("HumanoidRootPart")
+                local camera = workspace.CurrentCamera
+                if not humanoid or not rootPart or not camera then return end
+
+                humanoid.WalkSpeed = 0
+
+                while collectingCheese do
+                    for _, cheese in ipairs(workspace.DynamicFurniture:GetChildren()) do
+                        if not collectingCheese then break end
+
+                        if cheese:IsA("Model") and cheese.Name == "Cheese" then
+                            local prompt = cheese:FindFirstChildOfClass("ProximityPrompt")
+                            if prompt then
+                                rootPart.CFrame = CFrame.new(cheese.PrimaryPart.Position + Vector3.new(0, 3, 0))
+                                task.wait(0.1)
+                                camera.CFrame = CFrame.new(camera.CFrame.Position, rootPart.Position - Vector3.new(0, 15, 0))
+
+                                if prompt.ClickablePrompt then
+                                    fireproximityprompt(prompt, 0)
+                                    task.wait(0.3)
+                                    fireproximityprompt(prompt, 1)
+                                else
+                                    fireproximityprompt(prompt)
+                                end
+
+                                task.wait(1.2)
+                            end
+                        end
+                    end
+                    task.wait(0.3)
+                end
+
+                humanoid.WalkSpeed = 16
+            end)
+        end
+    end
+})
+
+local collectingMushroom = false
+
+TabCollect:AddToggle({
+    Name = "Collect Mushroom",
+    Default = false,
+    Callback = function(v)
+        collectingMushroom = v
+
+        if collectingMushroom then
+            task.spawn(function()
+                local player = game.Players.LocalPlayer
+                local character = player.Character
+                if not character then return end
+
+                local humanoid = character:FindFirstChildOfClass("Humanoid")
+                local rootPart = character:FindFirstChild("HumanoidRootPart")
+                local camera = workspace.CurrentCamera
+                if not humanoid or not rootPart or not camera then return end
+
+                humanoid.WalkSpeed = 0
+
+                while collectingMushroom do
+                    for _, mushroom in ipairs(workspace.DynamicFurniture:GetChildren()) do
+                        if not collectingMushroom then break end
+
+                        if mushroom:IsA("Model") and mushroom.Name == "MushroomBase" then
+                            local prompt = mushroom:FindFirstChildOfClass("ProximityPrompt")
+                            if prompt then
+                                rootPart.CFrame = CFrame.new(mushroom.PrimaryPart.Position + Vector3.new(0, 3, 0))
+                                task.wait(0.3)
+                                camera.CFrame = CFrame.new(camera.CFrame.Position, rootPart.Position - Vector3.new(0, 15, 0))
+
+                                if prompt.ClickablePrompt then
+                                    fireproximityprompt(prompt, 0)
+                                    task.wait(1.2)
+                                    fireproximityprompt(prompt, 1)
+                                else
+                                    fireproximityprompt(prompt)
+                                end
+
+                                task.wait(1.5)
+                            end
+                        end
+                    end
+                    task.wait(0.5)
+                end
+
+                humanoid.WalkSpeed = 16
+            end)
+        end
+    end
+})
+
+
+
+local Section = TabCollect:AddSection({"Esp Item"})
+local Paragraph = TabCollect:AddParagraph({"!", "Don't enable them all at the same time to avoid issues. This is still in beta, so expect some bugs."})
+
+local ESP_Enabled = {}
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local Colors = {
+    Burger = Color3.fromRGB(255, 0, 0), -- Red
+    Cheese = Color3.fromRGB(255, 255, 0), -- Yellow
+    MushroomBase = Color3.fromRGB(0, 255, 0) -- Green
+}
+
+local Beams = {}
+
+function CreateESP(item, name)
+    -- Ensure PrimaryPart exists
+    if not item.PrimaryPart then
+        local basePart = item:FindFirstChildOfClass("BasePart")
+        if basePart then
+            item.PrimaryPart = basePart
+        else
+            return -- Skip if no valid part found
+        end
+    end
+    
+    -- Create Highlight
+    local highlight = item:FindFirstChild("Highlight")
+    if not highlight then
+        highlight = Instance.new("Highlight")
+        highlight.Parent = item
+        highlight.Adornee = item
+        highlight.FillColor = Colors[name]
+        highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+        highlight.FillTransparency = 0.2
+        highlight.OutlineTransparency = 0
+        highlight.Name = "ESP_" .. name
+    end
+    
+    -- Create Beam
+    if not Beams[item] then
+        local startAttachment = Instance.new("Attachment")
+        local endAttachment = Instance.new("Attachment")
+        local beam = Instance.new("Beam")
+        
+        startAttachment.Parent = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+        endAttachment.Parent = item.PrimaryPart
+        
+        beam.Attachment0 = startAttachment
+        beam.Attachment1 = endAttachment
+        beam.Color = ColorSequence.new(Colors[name])
+        beam.Width0 = 0.2
+        beam.Width1 = 0.2
+        beam.Parent = startAttachment
+        
+        Beams[item] = {beam, startAttachment, endAttachment}
+    end
+end
+
+function UpdateESP()
+    for _, item in pairs(workspace.DynamicFurniture:GetChildren()) do
+        if item:IsA("Model") and Colors[item.Name] then
+            if ESP_Enabled[item.Name] then
+                CreateESP(item, item.Name)
+            else
+                if item:FindFirstChild("ESP_" .. item.Name) then
+                    item["ESP_" .. item.Name]:Destroy()
+                end
+                if Beams[item] then
+                    Beams[item][1]:Destroy()
+                    Beams[item][2]:Destroy()
+                    Beams[item][3]:Destroy()
+                    Beams[item] = nil
+                end
+            end
+        end
+    end
+end
+
+function ToggleESP(name, enabled)
+    ESP_Enabled[name] = enabled
+    UpdateESP()
+end
+
+TabCollect:AddToggle({ 
+    Name = "Burger ESP",
+    Default = false,
+    Callback = function(v)
+        ToggleESP("Burger", v)
+    end
+})
+
+TabCollect:AddToggle({ 
+    Name = "Cheese ESP",
+    Default = false,
+    Callback = function(v)
+        ToggleESP("Cheese", v)
+    end
+})
+
+TabCollect:AddToggle({ 
+    Name = "MushroomBase ESP",
+    Default = false,
+    Callback = function(v)
+        ToggleESP("MushroomBase", v)
+    end
+})
+
+local TabInv = Window:MakeTab({"Inventory", "save"})
+local Paragraph = TabInv:AddParagraph({"For Safety", "This Featured can prevent you to lose valuable item\n if you're about to die"})
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+local mouse = player:GetMouse()
+
+local highlightedChest = nil
+local highlightInstance = nil
+local healthConnection = nil
+local clickConnection = nil
+
+-- Move items to chest (from index 0 to 27)
+local function moveItemsToChest(chestModel)
+	for i = 0, 27 do
+		local args = {
+			[1] = i;
+			[2] = chestModel;
+		}
+		ReplicatedStorage:WaitForChild("shared/network@GlobalEvents"):WaitForChild("moveItemToChest"):FireServer(unpack(args))
+	end
+end
+
+-- Get first ProximityPrompt inside the chest
+local function getPromptInModel(model)
+	for _, descendant in ipairs(model:GetDescendants()) do
+		if descendant:IsA("ProximityPrompt") then
+			return descendant
+		end
+	end
+	return nil
+end
+
+-- Highlight a chest model
+local function highlightChest(model)
+	if highlightInstance then
+		highlightInstance:Destroy()
+	end
+
+	highlightedChest = model
+
+	highlightInstance = Instance.new("Highlight")
+	highlightInstance.FillColor = Color3.new(1, 1, 0)
+	highlightInstance.OutlineColor = Color3.new(1, 0, 0)
+	highlightInstance.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+	highlightInstance.Parent = model
+	highlightInstance.Adornee = model
+end
+
+-- CLICK CHEST BUTTON
+TabInv:AddButton({"Click Chest", function()
+	if highlightedChest then return end
+
+	print("Click a Chest model...")
+
+	if clickConnection then
+		clickConnection:Disconnect()
+	end
+
+	clickConnection = mouse.Button1Down:Connect(function()
+		local target = mouse.Target
+		if not target then return end
+
+		local model = target:FindFirstAncestorOfClass("Model")
+		if model and model:IsDescendantOf(workspace:WaitForChild("DynamicFurniture")) then
+			if not highlightedChest then
+				highlightChest(model)
+				print("Chest highlighted:", model.Name)
+
+				if clickConnection then
+					clickConnection:Disconnect()
+				end
+			end
+		end
+	end)
+end})
+
+-- RESET BUTTON
+TabInv:AddButton({"Reset", function()
+	if highlightInstance then
+		highlightInstance:Destroy()
+		highlightInstance = nil
+	end
+	highlightedChest = nil
+
+	if clickConnection then
+		clickConnection:Disconnect()
+		clickConnection = nil
+	end
+
+	print("Highlight reset.")
+end})
+
+-- OPEN CHEST BUTTON
+TabInv:AddButton({"Open Chest", function()
+	if highlightedChest then
+		local prompt = getPromptInModel(highlightedChest)
+		if prompt then
+			fireproximityprompt(prompt)
+			print("Chest opened via ProximityPrompt.")
+		else
+			warn("No ProximityPrompt found in chest.")
+		end
+	else
+		warn("No chest selected.")
+	end
+end})
+
+-- TOGGLE: Auto Move on Low Health
+local Toggle1 = TabInv:AddToggle({ 
+	Name = "Auto Move on Low HP",
+	Description = "Moves items when HP <= 50",
+	Default = false 
+})
+
+Toggle1:Callback(function(enabled)
+	if enabled then
+		healthConnection = RunService.RenderStepped:Connect(function()
+			local humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+			if humanoid and humanoid.Health <= 50 and highlightedChest then
+				moveItemsToChest(highlightedChest)
+			end
+		end)
+	else
+		if healthConnection then
+			healthConnection:Disconnect()
+			healthConnection = nil
+		end
+	end
+end)
+
+
+
+local TabShop = Window:MakeTab({"Shop", "shopping-cart"})
+local Paragraph = TabShop:AddParagraph({"Premium Shop", "You can buy Premium weapon here"})
+
+TabShop:AddButton({"Buy Railgun (5364 bottle needs)", function(Value)
+    local args = {
+        [1] = "Railgun";
+    }
+
+    game:GetService("ReplicatedStorage"):WaitForChild("shared/network@GlobalEvents", 9e9):WaitForChild("buyItem", 9e9):FireServer(unpack(args))
+end})
+
+TabShop:AddButton({"Buy AssaultRifle (16091 bottle needs)", function(Value)
+    local args = {
+        [1] = "AssaultRifle";
+    }
+
+    game:GetService("ReplicatedStorage"):WaitForChild("shared/network@GlobalEvents", 9e9):WaitForChild("buyItem", 9e9):FireServer(unpack(args))
+end})
+
+
+
+local TabSetting = Window:MakeTab({"Setting", "apple"})
+
+local savedPosition = nil -- Variable para sa saved position
+
+-- Save Position Button
+TabSetting:AddButton({"Save Position", function()
+    local playerRoot = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if playerRoot then
+        savedPosition = playerRoot.CFrame
+        print("Position Saved:", savedPosition)
+    end
+end})
+
+-- Teleport to Saved Position Button
+TabSetting:AddButton({"Teleport to Saved Position", function()
+    local playerRoot = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+    if playerRoot and savedPosition then
+        playerRoot.CFrame = savedPosition
+        print("Teleported to Saved Position")
+    end
+end})
+
+local Paragraph = TabSetting:AddParagraph({"READ THIS!", "This is for your safety \nIf a player attempts to kill you and your health drops to 70 or below, you will automatically teleport to the preset coordinates to stay safe.\n\nThis is work only if player trying to kill you, dont try this on fire or poison"})
+
+local player = game.Players.LocalPlayer
+local savedPosition = nil
+local teleportPosition = Vector3.new(144, 419, 46)
+local toggled = false
+local platform = nil
+
+local function setupCharacter()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
+    local rootPart = character:WaitForChild("HumanoidRootPart")
+    
+    humanoid.HealthChanged:Connect(function(health)
+        if toggled then
+            if health <= 70 then
+                if not savedPosition then
+                    savedPosition = rootPart.Position
+                end
+                rootPart.CFrame = CFrame.new(teleportPosition)
+                rootPart.Velocity = Vector3.new(0, 0, 0) -- Prevent falling
+                
+                -- Create an invisible platform if not already created
+                if not platform then
+                    platform = Instance.new("Part")
+                    platform.Size = Vector3.new(10, 1, 10)
+                    platform.Position = teleportPosition - Vector3.new(0, 3, 0)
+                    platform.Anchored = true
+                    platform.CanCollide = true
+                    platform.Transparency = 1
+                    platform.Parent = game.Workspace
+                end
+            elseif health >= 80 and savedPosition then
+                if platform then
+                    platform:Destroy()
+                    platform = nil
+                end
+                rootPart.CFrame = CFrame.new(savedPosition)
+                rootPart.Velocity = Vector3.new(0, 0, 0) -- Reset velocity
+                savedPosition = nil
+            end
+        end
+    end)
+end
+
+player.CharacterAdded:Connect(setupCharacter)
+if player.Character then
+    setupCharacter()
+end
+
+TabSetting:AddToggle({ 
+    Name = "Safety First",
+    Default = false,
+    Callback = function(v)
+        toggled = v
+        if not v and savedPosition and player.Character then
+            local character = player.Character
+            local rootPart = character:FindFirstChild("HumanoidRootPart")
+            if rootPart then
+                if platform then
+                    platform:Destroy()
+                    platform = nil
+                end
+                rootPart.CFrame = CFrame.new(savedPosition)
+                rootPart.Velocity = Vector3.new(0, 0, 0)
+                savedPosition = nil
+            end
+        end
+    end
+})
